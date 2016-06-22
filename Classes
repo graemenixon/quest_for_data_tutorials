@@ -1,0 +1,123 @@
+# Creating a function that loops through an NFL dataset and prints the number of wins in a given year:
+# note: row[2] is the team name and row[0] is the year concerned
+
+import csv
+
+f = open("nfl.csv", 'r')
+nfl = list(csv.reader(f))
+
+def nfl_wins(team):
+    count = 0
+    for row in nfl:
+        if row[2] == team:
+            count = count + 1
+    return count
+    
+def nfl_wins_in_a_year(team, year):
+    count = 0
+    for row in nfl:
+        if row[2] == team and row[0] == year:
+            count += 1
+    return count
+
+browns_2010_wins = nfl_wins_in_a_year("Cleveland Browns", "2010")
+eagles_2011_wins = nfl_wins_in_a_year("Philadelphia Eagles", "2011")
+
+
+# Defining classes
+# This allows for the class "Team" to be assinged the name upon instantiation:
+# Note that self is necessary for class Team to refer to itself, and the name is grabbed from the user when Team is called
+
+class Team():
+    def __init__(self, name):
+        self.name = name
+        
+giants = Team("New York Giants")
+
+
+# The following code does the same as above, but now also defines functions that the initiated class can now use.
+# These functions would have to be called by the user, however. But they are pre-built!
+# row[2] refers to who won the game in a 1 vs. 1 matchup
+
+import csv
+
+f = open("nfl.csv", 'r')
+nfl = list(csv.reader(f))
+
+# The nfl data is loaded into the nfl variable.
+class Team():
+    def __init__(self, name):
+        self.name = name
+
+    def print_name(self):
+        print(self.name)
+        
+    # Your method goes here
+    def count_total_wins(self):
+        wins = 0
+        for row in nfl:
+            if row[2] == self.name:
+                wins += 1
+        return wins
+    
+    
+bucs = Team("Tampa Bay Buccaneers")
+bucs.print_name()
+
+broncos = Team("Denver Broncos")
+broncos_wins = broncos.count_total_wins()
+print(broncos_wins)
+
+chiefs = Team("Kansas City Chiefs")
+chiefs_wins = chiefs.count_total_wins()
+print(chiefs_wins)
+
+
+# A best practice is to the load the dataset you are using within a class or function underneath "init", so it is
+# always there for the user and doesn't depend on outside code.
+
+import csv
+class Team():
+    def __init__(self, name):
+        self.name = name
+        f = open("nfl.csv", 'r')
+        csvreader = csv.reader(f)
+        self.nfl = list(csvreader)
+
+    def count_total_wins(self):
+        count = 0
+        for row in self.nfl:
+            if row[2] == self.name:
+                count = count + 1
+        return count
+
+jaguars = Team("Jacksonville Jaguars")
+jaguars_wins = jaguars.count_total_wins()
+
+
+# Adds more functionality...
+
+import csv
+class Team():
+    def __init__(self, name):
+        self.name = name
+        f = open("nfl.csv", 'r')
+        csvreader = csv.reader(f)
+        self.nfl = list(csvreader)
+
+    def count_total_wins(self):
+        count = 0
+        for row in self.nfl:
+            if row[2] == self.name:
+                count = count + 1
+        return count
+    
+    def count_wins_in_year(self, year):
+        count = 0
+        for row in self.nfl:
+            if row[2] == self.name and row[0] == year:
+                count += 1
+        return count
+        
+sanfran = Team("San Francisco 49ers")
+niners_wins_2013 = sanfran.count_wins_in_year("2013")
