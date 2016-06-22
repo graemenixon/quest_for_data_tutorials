@@ -1,0 +1,87 @@
+# Code to read in a CSV file for Pandas
+
+import pandas
+
+food_info = pandas.read_csv("food_info.csv")
+
+print(type(food_info))
+
+# .head() is a method to "peak" at the dataset, returning 5 rows by default or a specificed number / range
+  .columns() will display the full list of columns
+  .shape() returns a tuple of integers, describing the rows x columns
+  .loc[] returns rows within a Pandas dataframe, referring to the index, will include both START and END of row
+    can pass in ranges [2:7] or individual rows [1,6,8,999]
+  .dtypes returns the types of variables within your Pandas dataset
+  .endswith("string") returns column headers that end with "(g)"
+  .sort_values("Column to sort by", inplace = True/False (do you want a new object?) , ascending = False (True by default))
+  
+  
+# Access columns by indexing against the column name:
+
+# Series object.
+ndb_col = food_info["NDB_No"]
+print(ndb_col)
+
+# Display the type of the column to confirm it's a Series object.
+print(type(ndb_col))
+
+saturated_fat = food_info["FA_Sat_(g)"]
+
+cholesterol = food_info["Cholestrl_(mg)"]
+
+# Can select multiple columns at once
+
+columns = ["Zinc_(mg)", "Copper_(mg)"]
+zinc_copper = food_info[columns]
+
+# Skipping the assignment.
+zinc_copper = food_info[["Zinc_(mg)", "Copper_(mg)"]]
+
+# Code that pulls out all columns ending with "(g)"
+
+print(food_info.columns)
+print(food_info.head(2))
+
+columns = food_info.columns
+columns = columns.tolist()
+
+gram_columns = []
+for item in columns:
+    if item.endswith("(g)") == True:
+        gram_columns.append(item)
+
+gram_df = food_info[gram_columns]
+gram_df.head(3)
+
+# Transformations are applied to each row of data, when selecting from columns:
+
+div_100 = food_info["Iron_(mg)"] / 1000
+add_100 = food_info["Iron_(mg)"] + 100
+sub_100 = food_info["Iron_(mg)"] - 100
+mult_2 = food_info["Iron_(mg)"]*2
+
+sodium_grams = food_info["Sodium_(mg)"] / 1000
+sugar_milligrams = food_info["Sugar_Tot_(g)"] * 1000
+
+# The same logic above can be done for two columns of SAME SIZE
+
+# Normalizing values within a column:
+
+print(food_info["Protein_(g)"][0:5])
+max_protein = food_info["Protein_(g)"].max()
+normalized_protein = food_info["Protein_(g)"] / max_protein
+print(normalized_protein[0:5])
+
+print(food_info["Lipid_Tot_(g)"])
+max_fat = food_info["Lipid_Tot_(g)"].max()
+normalized_fat = food_info["Lipid_Tot_(g)"] / max_fat
+print(normalized_fat)
+
+# Adding new columns to your dataset is easy. Just index the new columns and assign the values
+
+max_fat = food_info["Lipid_Tot_(g)"].max()
+food_info["Normalized_Fat"] = food_info["Lipid_Tot_(g)"] / max_fat
+
+print(food_info["Normalized_Fat"])
+
+# You can sort your datasets by using the variable.sort_values() method
