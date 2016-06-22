@@ -1,0 +1,51 @@
+#Creating dictionaries:
+
+names = {}
+
+#Setting values in the dictionary:
+
+names["Graeme"] = 1
+names["Jennifer"] = 2
+names["Zane"] = 3
+
+print(names)
+# returns: {"Graeme":1 , "Jennifer":2 , "Zane":3}
+
+# You can look up a variable by referencing it as so:
+
+count_graeme = names["Graeme"]
+# will return: 1
+
+# Easier of defining a dictionary:
+
+names{
+  "Graeme" : 1,
+  "Jennifer" : 2,
+  "Zane" : 3
+}
+# Note the commas...
+
+# Modifying values is easy:
+# This re-assings the value
+names["Graeme"] = 5
+# While this would update the value:
+names["Graeme"] = names["Graeme"] + 5
+
+# Looking for items: you can use the 'in' function to look for something in a dictionary, which will return a Boolean
+
+"Graeme" in names
+# returns True
+
+# Counting with dictionaries:
+
+pantry = ["apple", "orange", "grape", "apple", "orange", "apple", "tomato", "potato", "grape"]
+pantry_counts = {}
+
+for item in pantry:
+    if item in pantry_counts:
+        pantry_counts[item] = pantry_counts[item] + 1
+    else:
+        pantry_counts[item] = 1
+        
+        
+
