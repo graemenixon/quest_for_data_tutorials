@@ -18,3 +18,162 @@ print(passenger_survival)
 passenger_age = titanic_survival.pivot_table(index="pclass", values="age", aggfunc=np.mean)
 
 print(passenger_age)
+
+
+# More complex PivotTables (more than 1 value):
+
+import numpy as np
+
+# This will compute the mean survival chance and the mean age for each passenger class
+passenger_survival = titanic_survival.pivot_table(index="pclass", values=["age", "survived"], aggfunc=np.mean)
+
+print(passenger_survival)
+
+port_stats = titanic_survival.pivot_table(index="embarked", values=["age", "survived", "fare"], aggfunc=np.mean)
+
+print(port_stats)
+
+# Need to drop those datapoints that don't have the data we need? We can use .dropna:
+
+import pandas as pd
+
+# Drop all rows that have missing values
+new_titanic_survival = titanic_survival.dropna()
+
+# It looks like we have an empty dataframe now.
+# This is because every row has at least one missing value.
+print(new_titanic_survival)
+
+# We can also use the axis argument to drop columns that have missing values
+new_titanic_survival = titanic_survival.dropna(axis=1)
+print(new_titanic_survival)
+
+# We can use the subset argument to only drop rows if certain columns have missing values.
+# This drops all rows where "age" or "sex" is missing.
+new_titanic_survival = titanic_survival.dropna(subset=["age", "sex"])
+
+# Drops all rows in titanic_survival where age, body or home destination have missing values:
+
+new_titanic_survival = titanic_survival.dropna(subset=["age", "body", "home.dest"])
+
+print(new_titanic_survival)
+
+# Loc uses index. iloc uses position.
+
+# See the numbers to the left of each row?
+# Those are row indexes.
+# Since the data has so many columns, it is split into multiple lines, but there are only 5 rows.
+print(titanic_survival.iloc[:5,:])
+
+
+new_titanic_survival = titanic_survival.dropna(subset=["body"])
+# Now let's print out the first 5 rows in new_titanic_survival
+# The row indexes here aren't the same as in titanic_survival
+# This is because we modified the titanic_survival dataframe to generate new_titanic_survival
+# The row indexes you see here are the rows from titanic_survival that made it through the dropna method (didn't have missing values in the "body" column)
+# They retain their original numbering, though
+print(new_titanic_survival.iloc[:5,:])
+
+# We've been using the .iloc method to address rows and columns
+# .iloc works by position (row/column number)
+
+# This code prints the fourth row in the data
+print(new_titanic_survival.iloc[3,:])
+
+# Using .loc instead addresses rows and columns by index, not position
+# This actually prints the first row, because it has index 3
+print(new_titanic_survival.loc[3,:])
+
+row_index_25 = new_titanic_survival.loc[25,:]
+
+row_position_fifth = new_titanic_survival.iloc[4,:]
+
+
+# Using .loc to index columns:
+
+new_titanic_survival = titanic_survival.dropna(subset=["body"])
+
+# This prints the value in the first column of the first row
+print(new_titanic_survival.iloc[0,0])
+
+# This prints the exact same value -- it prints the value at row index 3 and column "pclass"
+# This happens to also be at row 0, index 0
+print(new_titanic_survival.loc[3,"pclass"])
+
+row_1100_age = new_titanic_survival.loc[1100,"age"]
+
+row_25_survived = new_titanic_survival.loc[25,"survived"]
+
+# Reindexing data is sometimes important
+
+# The indexes are the original numbers from titanic_survival
+new_titanic_survival_1 = titanic_survival.dropna(subset=["body"])
+print(new_titanic_survival_1)
+
+# Reset the index to an integer sequence, starting at 0.
+# The drop keyword argument specifies whether or not to make a dataframe column with the index values.
+# If True, it won't, if False, it will.
+# We'll almost always want to set it to True.
+new_titanic_survival = new_titanic_survival.reset_index(drop=True)
+# Now we have indexes starting from 0!
+print(new_titanic_survival)
+
+titanic_survival = titanic_survival.dropna(subset=["age", "boat"])
+titanic_reindexed = titanic_survival.reset_index(drop=True)
+print(titanic_reindexed)
+
+# Apply is a useful function (.apply) when you want to apply a calculation or function over a column:
+
+import pandas as pd
+
+# Let's look at a simple example.
+# This function counts the number of null values in a series
+def null_count(column):
+    # Make a vector that contains True if null, False if not.
+    column_null = pd.isnull(column)
+    # Create a new vector with only values where the series is null.
+    null = column[column_null == True]
+    # Return the count of null values.
+    return len(null)
+
+# Compute null counts for each column
+column_null_count = titanic_survival.apply(null_count)
+print(column_null_count)
+
+
+def not_null_count(column):
+    column_null = pd.isnull(column)
+    not_null = column[column_null == False]
+    return len(not_null)
+    
+column_not_null_count = titanic_survival.apply(not_null_count)
+print(column_not_null_count)
+
+# Want instead to operate over a row? throw in the index = 1 argument.
+
+# This function will check if a row is an entry for a minor (under 18), or not.
+def is_minor(row):
+    if row["age"] < 18:
+        return True
+    else:
+        return False
+
+# This is a boolean series with the same length as the number of rows in titanic_survival
+# Each entry is True if the row at the same position is a record for a minor
+# The axis of 1 specifies that it will iterate over rows, not columns
+minors = titanic_survival.apply(is_minor, axis=1)
+
+def what_age(row):
+    if pd.isnull(row["age"]) == True:
+        return "unknown"
+    elif row["age"] < 18:
+        return "minor"
+    else:
+        return "adult"
+
+age_labels = titanic_survival.apply(what_age, axis=1)  
+
+# Using the above labels to return survival percentages...
+
+# The titanic_survival variable now has the added column "age_labels", which is our age labels series from the last screen.
+age_group_survival = titanic_survival.pivot_table(index="age_labels", values = "survived", aggfunc = np.mean)
