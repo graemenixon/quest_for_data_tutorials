@@ -1,0 +1,20 @@
+# PivotTables are excellent. Example code below for the Titanic dataset:
+
+import numpy as np
+
+# Let's compute the survival change from 0-1 for people in each class
+# The closer to one, the higher the chance people in that passenger class survived
+# The "survived" column contains a 1 if the passenger survived, and a 0 if not
+# The pivot_table method on a pandas dataframe will let us do this
+# index specifies which column to subset data based on (in this case, we want to compute the survival percentage for each class)
+# values specifies which column to subset based on the index
+# The aggfunc specifies what to do with the subsets
+# In this case, we split survived into 3 vectors, one for each passenger class, and take the mean of each
+passenger_survival = titanic_survival.pivot_table(index="pclass", values="survived", aggfunc=np.mean)
+
+# First class passengers had a much higher survival chance
+print(passenger_survival)
+
+passenger_age = titanic_survival.pivot_table(index="pclass", values="age", aggfunc=np.mean)
+
+print(passenger_age)
