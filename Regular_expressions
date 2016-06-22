@@ -1,0 +1,110 @@
+# Regular expressions are a powerful way of stripping out patterns found in datasets
+
+# What is the pattern below?
+
+strings = ["data science", "big data", "metadata"]
+# All elements of the list contain the word "data"
+regex = "data"
+
+# Regex special characters(SC): 
+  (.) = replace any character
+  (^) = match beginning of string [e.g., "^a" returns any string starting with "a"]
+  ($) = match end of string [e.g., "a$" returns any string ending with "a"]
+  ([Aa@]) = anything between square brackets can be used as a substitute, in this case returning anyhting with "A" "a" or "@"
+    You can also do ranges here, like "A-Z", "a-z", 1-5000 etc.
+      You can even combine these, say for years. So if you wanted every year between 0 and 1999, you could have:
+        [0-1][0-9][0-9][0-9] as your regex.
+          Too long? No worries. You can define ({}) as repeaters. e.g., for above you could have [0-1][0-9]{3} as your regex.
+  (\) = Want to actually use one of these special characters? Escape it by using \
+  (|) = Combine regex. See "MEGA-EXAMPLE --- " below
+
+
+strings = ["bat", "robotics", "megabyte"]
+regex = "b.t"
+
+# The 're' module is your friend. It has some helpful methods:
+  re.search = (regex, string) checks if regex is a match for string. Will return a match object 
+    if it does, and None if it doesn't. [e.g., if re.search = ("needle", "haystack") != None, will return False b/c "needle"
+    isn't in "haystack"
+  
+# The following code prints the count of the number of times it sees the expression "of Reddit" in the first row of posts,
+  which is the title row
+
+import re
+
+of_reddit_count = 0
+for row in posts:
+    if re.search("of Reddit", row[0]) != None:
+        of_reddit_count += 1
+
+print(of_reddit_count)
+
+# Now accounting for some inconsistencies:
+
+of_reddit_count = 0
+for row in posts:
+    if re.search("of [Rr]eddit", row[0]) != None:
+        of_reddit_count += 1
+        
+
+# MEGA-EXAMPLE ---  Accounting for a ton of inconsistencies:
+
+import re
+
+serious_start_count = 0
+for row in posts:
+    if re.search("^[\[\(][Ss]erious[\]\)]", row[0]) != None:
+        serious_start_count += 1
+
+print(serious_start_count)
+
+serious_end_count = 0
+for row in posts:
+    if re.search("[\[\(][Ss]erious[\]\)]$", row[0]) != None:
+        serious_end_count += 1
+        
+serious_count_final = 0
+for row in posts:
+    if re.search("[\[\(][Ss]erious[\]\)]$|^[\[\(][Ss]erious[\]\)]", row[0]) != None:
+        serious_count_final += 1
+
+print(serious_end_count)
+print(serious_count_final)
+
+# The substitution method: using re.sub, you can actually modify the dataset you are analyzing and substitute data.
+  It has three components:
+  re.sub(
+    pattern - the regular expression to match,
+    repl - the string to replace the returned substring with, and
+    string - The string in which we would like to replace occurrences of the pattern with repl
+    )
+
+# Example of re.sub, which replaces all the regex cases with just "[Serious]":
+
+import re
+posts_new = []
+
+for row in posts:
+    row[0] = re.sub("[\[\(][Ss]erious[\]\)]", "[Serious]", row[0])
+    posts_new.append(row)
+    
+# Example for searching for years. Below would append all elements it found in "year_strings" that fit the regex in re.search:
+
+import re
+
+year_strings = []
+
+for row in strings:
+    if re.search("[1-2][0-9][0-9][0-9]", row) != None:
+        year_strings.append(row)
+        
+
+# re.findall is a way to return substrings of things you are interested in. It takes two arguments:
+  re.findall(
+    regex
+    string
+    )
+# for example, re.findall("[a-z]", "abc123") would return ["a", "b", "c"], since those are the 
+  substrings that match the regular expression.
+  
+
